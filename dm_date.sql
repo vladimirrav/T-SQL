@@ -1,5 +1,6 @@
 use DW;
 set nocount on;
+set dateformat ymd;
 set language brazilian;
 
 if object_id('dw.dm_data') is not null
@@ -40,19 +41,20 @@ create table dw.dm_data (
 	) on [PRIMARY] 
 ) on [PRIMARY] 
 
-truncate table dw.dm_data
+truncate table dw.dm_data;
 
-declare @StartDate datetime 
-    , @EndDate datetime 
-    , @Date datetime 
+declare	@StartDate datetime,
+		@EndDate datetime,
+		@Date datetime;
 
-select @StartDate = '2015-01-01' 
-    , @EndDate = concat(year(dateadd(year, 2, current_timestamp)), '-01-01')
+select	@StartDate = '2015-01-01',
+		@EndDate = concat(year(dateadd(year, 1, current_timestamp)), '-12-31');
+
 select @Date = @StartDate 
 
 print 'dw.dm_data - Load'
 
-while @Date < @EndDate 
+while @Date <= @EndDate 
 begin 
     insert into dw.dm_data 
     ( 
@@ -178,11 +180,11 @@ begin
 	set @sk_data = convert(int, convert(varchar, dateadd(day, 60, convert(date, concat(format(@Year, replicate('0', 4)), format(@EasterMonth, replicate('0', 2)), format(@EasterDay, replicate('0', 2))))), 112))
 	insert into #feriado_movel (sk_data, nome_feriado) values (@sk_data, 'Corpus Christi')
 
-	print concat(char(9), 'Carnaval: ', dateadd(day, -47, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year))), ' (', datename(weekday, dateadd(day, -47, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year)))), ')')
-	print concat(char(9), 'Quarta-feira de cinzas: ', dateadd(day, -46, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year))), ' (', datename(weekday, dateadd(day, -46, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year)))), ')')
-	print concat(char(9), 'Sexta-feira da paixão: ', dateadd(day, -2, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year))), ' (', datename(weekday, dateadd(day, -2, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year)))), ')')
-	print concat(char(9), 'Páscoa: ', convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year)), ' (', datename(weekday, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year))), ')')
-	print concat(char(9), 'Corpus Christi: ', dateadd(day, 60, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year))), ' (', datename(weekday, dateadd(day, 60, convert(date, concat(@EasterDay, '/', @EasterMonth, '/', @Year)))), ')')
+	print concat(char(9), 'Carnaval: ', dateadd(day, -47, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay))), ' (', datename(weekday, dateadd(day, -47, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay)))), ')')
+	print concat(char(9), 'Quarta-feira de cinzas: ', dateadd(day, -46, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay))), ' (', datename(weekday, dateadd(day, -46, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay)))), ')')
+	print concat(char(9), 'Sexta-feira da paixão: ', dateadd(day, -2, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay))), ' (', datename(weekday, dateadd(day, -2, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay)))), ')')
+	print concat(char(9), 'Páscoa: ', convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay)), ' (', datename(weekday, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay))), ')')
+	print concat(char(9), 'Corpus Christi: ', dateadd(day, 60, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay))), ' (', datename(weekday, dateadd(day, 60, convert(date, concat(@Year, '/', @EasterMonth, '/', @EasterDay)))), ')')
 	print concat(char(9), replicate('-', 50))
 	set @Year += 1
 end;
