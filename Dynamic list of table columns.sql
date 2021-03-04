@@ -6,21 +6,21 @@ print 'Dynamic list of table columns';
 (
 	select
 		TABLE_CATALOG,
-		iif(charindex(' ', TABLE_SCHEMA) > 0 or charindex('/', TABLE_SCHEMA) > 0 or TABLE_SCHEMA like '[0-9]%',
+		iif(TABLE_SCHEMA like '%[ |/]%' or TABLE_SCHEMA like '[0-9]%',
 					quotename(TABLE_SCHEMA),
 					TABLE_SCHEMA
-				) as TABLE_SCHEMA,
-		iif(charindex(' ', TABLE_NAME) > 0 or charindex('/', TABLE_NAME) > 0 or TABLE_NAME like '[0-9]%',
+		) as TABLE_SCHEMA,
+		iif(TABLE_NAME like '%[ |/]%' or TABLE_NAME like '[0-9]%',
 					quotename(TABLE_NAME),
 					TABLE_NAME
-				) as TABLE_NAME,
+		) as TABLE_NAME,
 		string_agg(
-				iif(charindex(' ', COLUMN_NAME) > 0 or charindex('/', COLUMN_NAME) > 0 or COLUMN_NAME like '[0-9]%',
+				iif(COLUMN_NAME like '%[ |/]%' or COLUMN_NAME like '[0-9]%',
 					quotename(COLUMN_NAME),
 					COLUMN_NAME
 				),
 				', '
-			) within group (order by ORDINAL_POSITION) as columns_list
+		) within group (order by ORDINAL_POSITION) as columns_list
 	from INFORMATION_SCHEMA.COLUMNS
 	group by
 		TABLE_CATALOG,
