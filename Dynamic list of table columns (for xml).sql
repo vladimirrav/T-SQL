@@ -1,4 +1,4 @@
-use DBName;
+use [db_name];
 
 --SQL server < 2017
 
@@ -16,9 +16,10 @@ print 'Dynamic list of table columns';
 					quotename(TABLE_NAME),
 					TABLE_NAME
 		) as TABLE_NAME,
+		ep.value as table_description,
 		(
 			select stuff((
-				select concat(', ', 
+				select concat(', ', char(13), char(10), char(9),
 					iif(COLUMN_NAME like '%[ |/]%' or COLUMN_NAME like '[0-9]%',
 						quotename(COLUMN_NAME),
 						COLUMN_NAME
@@ -33,12 +34,18 @@ print 'Dynamic list of table columns';
 			1, 2, '')
 		) as columns_list
 	from INFORMATION_SCHEMA.TABLES as c
+	outer apply fn_listextendedproperty(null,
+										'schema', c.TABLE_SCHEMA,
+										'table', c.TABLE_NAME,
+										null, null
+									) as ep
 )
 select
 	*,
-	concat('select ',
+	concat('select',
 			columns_list,
-			' from ',
+			char(13), char(10),
+			'from ',
 			TABLE_SCHEMA,
 			'.', 
 			TABLE_NAME,
@@ -46,4 +53,5 @@ select
 		) as cmd_select,
 		concat('insert into ', TABLE_SCHEMA, '.', TABLE_NAME, ' (', columns_list, ')') as cmd_insert
 from list
+where TABLE_SCHEMA = 'table_schema'
 order by TABLE_SCHEMA, TABLE_NAME;
