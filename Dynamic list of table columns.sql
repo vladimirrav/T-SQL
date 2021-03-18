@@ -19,7 +19,7 @@ print 'Dynamic list of table columns';
 					quotename(COLUMN_NAME),
 					COLUMN_NAME
 				),
-				', '
+				concat(', ', char(13), char(10), char(9))
 		) within group (order by ORDINAL_POSITION) as columns_list
 	from INFORMATION_SCHEMA.COLUMNS
 	group by
@@ -31,7 +31,8 @@ select
 	*,
 	concat('select ',
 			columns_list,
-			' from ',
+			char(13), char(10),
+			'from ',
 			TABLE_SCHEMA,
 			'.', 
 			TABLE_NAME,
