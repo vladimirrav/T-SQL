@@ -3,6 +3,11 @@ set nocount on;
 set dateformat ymd;
 set language brazilian;
 
+if schema_id('dw') is null
+begin
+	execute ('create schema dw;');
+end;
+
 if object_id('dw.dm_data') is not null
 begin
 	drop table dw.dm_data;
