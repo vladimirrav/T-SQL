@@ -1,35 +1,22 @@
 ﻿print N'Средное время в зависимости от средней скорости движения';
 
-declare @avg_v_1 as decimal(19,2),		/* Средная скорость км/ч */
-		@avg_v_2 as decimal(19,2),		/* Скорость км/ч */
-		@dist_km_1 as decimal(19, 2),	/* Растояние км */
-		@dist_km_2 as decimal(19, 2),	/* Растояние км */
-		@time_1 as time(0),
-		@time_2 as time(0),
+declare @avg_v as decimal(19, 1),	/* Средная скорость км/ч */
+		@dist_km as decimal(19, 1),	/* Растояние км */
+		@time as time(0),
 		@crlf_t char(2);
 
-select	@avg_v_1 = 90,
-		@avg_v_2 = 90,
-		@dist_km_1 = 963 ,
-		@dist_km_2 = 963,
-		@time_1 = '05:00',
-		@time_2 = '09:00',
-		@crlf_t = concat(char(10), char(9))
+select	@avg_v = 80,
+		@dist_km = 962,
+		@time = '09:05';
 
 print concat(
-		N'Туда', @crlf_t,
-		N'Время отправления: ', @time_1, @crlf_t,
-		N'Растояние (Км): ', @dist_km_1, @crlf_t,
-		N'Средная скорость (Км/ч): ', @avg_v_1, @crlf_t,
-		N'Время прибытия: ', convert(varchar, dateadd(second, (@dist_km_1 /  @avg_v_1) * 3600, @time_1), 108), @crlf_t,
-		N'Время пути: ', convert(varchar, dateadd(second, datediff(second, @time_1, convert(varchar, dateadd(second, (@dist_km_1 /  @avg_v_1) * 3600, @time_1), 108)), 108), 108), @crlf_t,
-		replicate(char(10), 2),
-		N'Обратно', @crlf_t,
-		N'Время отправления: ', @time_2, @crlf_t,
-		N'Растояние (Км): ', @dist_km_2, @crlf_t,
-		N'Средная скорость (Км/ч): ', @avg_v_2, @crlf_t,
-		N'Время прибытия: ', convert(varchar, dateadd(second, (@dist_km_2 / @avg_v_2) * 3600, @time_2), 108), @crlf_t,
-		N'Время пути: ', convert(varchar, dateadd(second, datediff(second, @time_1, convert(varchar, dateadd(second, (@dist_km_2 /  @avg_v_2) * 3600, @time_2), 108)), 108), 108)
+		convert(nchar(20), N'Растояние'), @dist_km, N' км', char(10),
+		convert(nchar(20), N'Средная скорость'), @avg_v, N' км/ч', char(10),
+		convert(nchar(20), N'Километры в минуту'), convert(decimal(10, 2), @avg_v / 60), N' км/мин', char(10),
+		convert(nchar(20), N'Метры в секунду'), convert(decimal(10, 1), @avg_v / 3.6), N' м/сек', char(10),
+		convert(nchar(20), N'Время отправления'), @time, char(10),
+		convert(nchar(20), N'Время прибытия'), convert(varchar, dateadd(second, (@dist_km /  @avg_v) * 3600, @time), 108), char(10),
+		convert(nchar(20), N'Время в пути'), convert(varchar, dateadd(second, datediff(second, @time, convert(varchar, dateadd(second, (@dist_km /  @avg_v) * 3600, @time), 108)), 108), 108),
+		' - ',
+		datediff(minute, @time, convert(varchar, dateadd(second, (@dist_km /  @avg_v) * 3600, @time), 108)), N' мин'
 	);
-
---print concat(N'Обратно', char(10), char(9), '@dist_km_2: ', @dist_km_2)
